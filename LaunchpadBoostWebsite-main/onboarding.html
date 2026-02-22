@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Onboarding | Launchpad Boost</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .ob-wrap {
+            padding-top: calc(var(--header-height) + 2rem);
+            padding-bottom: 3rem;
+            min-height: 100vh;
+            background: var(--bg-surface);
+        }
+        .ob-card {
+            max-width: 680px;
+            margin: 0 auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        .ob-progress {
+            max-width: 680px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1rem;
+        }
+        .ob-progress-track {
+            background: var(--border-light);
+            height: 6px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .ob-progress-fill {
+            background: var(--accent-gradient);
+            height: 100%;
+            transition: width 0.4s ease;
+            border-radius: 4px;
+        }
+        .ob-progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .ob-step-header { margin-bottom: 2rem; }
+        .ob-step-header h2 { font-size: 1.5rem; margin-bottom: 0.35rem; }
+        .ob-step-header p { font-size: 0.9rem; color: var(--text-secondary); }
+        .ob-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .ob-svc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .ob-svc-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-strong);
+            border-radius: var(--radius-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .ob-svc-chip:hover { border-color: var(--accent-primary); }
+        .ob-svc-chip.active {
+            border-color: var(--accent-primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+        .ob-svc-chip input[type="checkbox"] { display: none; }
+        .ob-chip-box {
+            width: 22px; height: 22px; border-radius: 6px;
+            border: 2px solid var(--border-strong);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .ob-svc-chip.active .ob-chip-box {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+        .ob-chip-box svg { display: none; }
+        .ob-svc-chip.active .ob-chip-box svg { display: block; }
+        .ob-chip-label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+        .ob-chip-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+        .ob-contact {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-main);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .ob-contact-title {
+            font-weight: 600; font-size: 0.9rem;
+            color: var(--text-primary); margin-bottom: 1rem;
+        }
+        .ob-divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 1.75rem 0;
+        }
+        .ob-btns {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .ob-btn-back {
+            background: transparent; border: 1px solid var(--border-strong);
+            color: var(--text-secondary); padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-main); font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .ob-btn-back:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+        .ob-btn-next {
+            background: var(--accent-primary); color: #fff;
+            padding: 0.75rem 1.75rem; border-radius: var(--radius-main);
+            font-family: 'Inter', sans-serif; font-size: 0.9rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; border: none;
+        }
+        .ob-btn-next:hover {
+            background: var(--accent-dark); transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.2);
+        }
+        .ob-btn-submit {
+            background: var(--accent-gradient); color: #fff;
+            padding: 0.85rem 2rem; border-radius: var(--radius-main);
+            font-family: 'Inter', sans-serif; font-size: 0.95rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; border: none;
+        }
+        .ob-btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+        }
+        .ob-step { display: none; }
+        .ob-step.active { display: block; }
+        .ob-cond { display: none; }
+        .ob-cond.visible { display: block; }
+        .ob-note {
+            background: rgba(124, 58, 237, 0.05);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            border-radius: var(--radius-main);
+            padding: 1rem 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .ob-note i { color: var(--accent-primary); font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+        .ob-section-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .ob-badge {
+            font-size: 0.85rem; color: var(--accent-primary);
+            display: flex; align-items: center; gap: 0.4rem; font-weight: 500;
+        }
+        .ob-success {
+            display: none; text-align: center; padding: 3rem 2rem;
+        }
+        .ob-success-icon {
+            width: 72px; height: 72px; background: #DCFCE7; color: #166534;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 1.5rem;
+        }
+        .ob-success h2 { margin-bottom: 0.5rem; }
+        .ob-success p { color: var(--text-secondary); font-size: 0.95rem; }
+        .ob-hours-grid {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr auto;
+            gap: 0.5rem 0.75rem;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .ob-hours-grid label { font-weight: 500; color: var(--text-primary); min-width: 40px; }
+        .ob-hours-grid input[type="time"] {
+            padding: 0.4rem 0.5rem; border: 1px solid var(--border-strong);
+            border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .ob-hours-grid input[type="time"]:focus {
+            outline: none; border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.05);
+        }
+        .ob-closed-label { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+        .ob-closed-label input { accent-color: var(--accent-primary); }
+        .ob-ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        .ob-ai-chip {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.65rem 1rem; background: var(--bg-surface);
+            border: 1.5px solid var(--border-strong); border-radius: var(--radius-main);
+            cursor: pointer; transition: all 0.2s; user-select: none; font-size: 0.9rem;
+            font-weight: 500; color: var(--text-primary);
+        }
+        .ob-ai-chip:hover { border-color: var(--accent-primary); }
+        .ob-ai-chip.active { border-color: var(--accent-primary); background: rgba(124, 58, 237, 0.05); }
+        .ob-ai-chip input { display: none; }
+        .ob-ai-dot {
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid var(--border-strong);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .ob-ai-chip.active .ob-ai-dot { background: var(--accent-primary); border-color: var(--accent-primary); }
+        .ob-ai-dot svg { display: none; }
+        .ob-ai-chip.active .ob-ai-dot svg { display: block; }
+
+        @media (max-width: 768px) {
+            .ob-wrap { padding-top: calc(var(--header-height) + 1rem); }
+            .ob-card { margin: 0 1rem; padding: 1.5rem; }
+            .ob-row { grid-template-columns: 1fr; }
+            .ob-svc-grid { grid-template-columns: 1fr; }
+            .ob-ai-grid { grid-template-columns: 1fr; }
+            .ob-hours-grid { grid-template-columns: auto 1fr 1fr auto; font-size: 0.8rem; }
+            .ob-btns { flex-direction: column-reverse; gap: 0.75rem; }
+            .ob-btns .ob-btn-back,
+            .ob-btns .ob-btn-next,
+            .ob-btns .ob-btn-submit {
+                width: 100%; text-align: center;
+                display: flex; justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="launchpad_boost_logo.svg" alt="Launchpad Boost" class="logo-img" style="height:44px;width:auto;display:block;">
+            </a>
+            <div class="ob-badge">
+                <i class="ph-fill ph-lock-key"></i> Secure Onboarding
+            </div>
+        </div>
+    </header>
+
+    <div class="ob-wrap">
+
+        <div class="ob-progress">
+            <div class="ob-progress-track">
+                <div class="ob-progress-fill" id="progressBar" style="width: 12.5%;"></div>
+            </div>
+            <div class="ob-progress-info">
+                <span id="stepLabel">Step 1 of 8</span>
+                <span id="stepName">Business Information</span>
+            </div>
+        </div>
+
+        <div class="ob-card">
+            <form id="obForm" name="onboarding" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                <input type="hidden" name="form-name" value="onboarding">
+                <p style="display:none;"><input name="bot-field"></p>
+
+                <!-- STEP 1: BUSINESS INFO -->
+                <div class="ob-step active" id="step-1">
+                    <div class="ob-step-header">
+                        <h2>Tell us about your business</h2>
+                        <p>Basic information so we can set up your account properly.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Legal Business Name *</label>
+                        <input type="text" name="business_name" class="form-input" placeholder="e.g. Joe's Plumbing LLC" required>
+                    </div>
+                    <div class="ob-row">
+                        <div class="form-group">
+                            <label class="form-label">Industry / Category *</label>
+                            <input type="text" name="industry" class="form-input" placeholder="e.g. Plumber, Dentist, Attorney">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Business Phone *</label>
+                            <input type="tel" name="business_phone" class="form-input" placeholder="(555) 000-0000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Business Address *</label>
+                        <input type="text" name="business_address" class="form-input" placeholder="123 Main St, City, State, ZIP">
+                    </div>
+                    <div class="ob-row">
+                        <div class="form-group">
+                            <label class="form-label">Current Website URL</label>
+                            <input type="url" name="website" class="form-input" placeholder="https://yoursite.com (if any)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service Area *</label>
+                            <input type="text" name="service_area" class="form-input" placeholder="e.g. Miami-Dade County, 25 mi radius">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Brief Business Description *</label>
+                        <textarea name="description" class="form-textarea" placeholder="What does your business do? Who do you serve? What sets you apart from competitors?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">List all services you offer *</label>
+                        <textarea name="services_offered" class="form-textarea" rows="5" placeholder="List each service, one per line. e.g.&#10;Emergency plumbing&#10;Water heater installation&#10;Drain cleaning&#10;Sewer line repair&#10;Bathroom remodeling"></textarea>
+                        <p class="ob-note">We use this for your website, ad campaigns, SEO, and Google Business Profile.</p>
+                    </div>
+
+                    <hr class="ob-divider">
+
+                    <div class="form-group">
+                        <label class="form-label">Do you own a domain name? *</label>
+                        <select name="domain_status" class="form-select" onchange="toggleDomain(this.value)">
+                            <option value="">Select one</option>
+                            <option value="yes">Yes — I have a domain</option>
+                            <option value="no">No — I need one</option>
+                        </select>
+                    </div>
+
+                    <div class="ob-gbp-toggle" id="domainYes">
+                        <div class="ob-gbp-box">
+                            <div class="form-group">
+                                <label class="form-label">What is your domain?</label>
+                                <input type="text" name="domain_name" class="form-input" placeholder="e.g. joesplumbing.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Where is it registered?</label>
+                                <input type="text" name="domain_registrar" class="form-input" placeholder="e.g. GoDaddy, Namecheap, Google Domains (or 'I don't know')">
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                We'll need access to configure your new website. Grant admin or collaborator access to <strong style="color: var(--accent-primary);">domains@boostwithlaunchpad.com</strong> on your registrar. We'll email you instructions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ob-gbp-toggle" id="domainNo">
+                        <div class="ob-gbp-box">
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                <i class="ph-fill ph-check-circle" style="color: #10B981;"></i>
+                                No worries — we'll register a domain for you as part of your setup. Our team will choose the best available option based on your business name and location.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ob-btns">
+                        <div></div>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: SERVICES -->
+                <div class="ob-step" id="step-2">
+                    <div class="ob-step-header">
+                        <h2>Select your services</h2>
+                        <p>Choose the services included in your package. The form will adapt to ask the right questions.</p>
+                    </div>
+                    <div class="ob-svc-grid">
+                        <label class="ob-svc-chip" onclick="toggleSvc(event, this)">
+                            <input type="checkbox" name="services" value="local_seo">
+                            <div class="ob-chip-box"><svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div><div class="ob-chip-label">Local SEO</div><div class="ob-chip-desc">Google Maps & local search</div></div>
+                        </label>
+                        <label class="ob-svc-chip" onclick="toggleSvc(event, this)">
+                            <input type="checkbox" name="services" value="ai_seo">
+                            <div class="ob-chip-box"><svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div><div class="ob-chip-label">AI SEO</div><div class="ob-chip-desc">ChatGPT, Gemini, Perplexity</div></div>
+                        </label>
+                        <label class="ob-svc-chip" onclick="toggleSvc(event, this)">
+                            <input type="checkbox" name="services" value="lsa">
+                            <div class="ob-chip-box"><svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div><div class="ob-chip-label">Local Service Ads</div><div class="ob-chip-desc">Google Guaranteed leads</div></div>
+                        </label>
+                        <label class="ob-svc-chip" onclick="toggleSvc(event, this)">
+                            <input type="checkbox" name="services" value="google_ads">
+                            <div class="ob-chip-box"><svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div><div class="ob-chip-label">Google Ads</div><div class="ob-chip-desc">Search & display campaigns</div></div>
+                        </label>
+                        <label class="ob-svc-chip" onclick="toggleSvc(event, this)">
+                            <input type="checkbox" name="services" value="meta_ads">
+                            <div class="ob-chip-box"><svg width="14" height="14" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div><div class="ob-chip-label">Meta Ads</div><div class="ob-chip-desc">Facebook & Instagram ads</div></div>
+                        </label>
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: CONTACTS -->
+                <div class="ob-step" id="step-3">
+                    <div class="ob-step-header">
+                        <h2>Key contacts</h2>
+                        <p>Who should we work with day-to-day?</p>
+                    </div>
+                    <div class="ob-contact">
+                        <div class="ob-contact-title">Primary Contact</div>
+                        <div class="ob-row">
+                            <div class="form-group"><label class="form-label">Full Name *</label><input type="text" name="contact1_name" class="form-input" placeholder="First and last name"></div>
+                            <div class="form-group"><label class="form-label">Title / Role</label><input type="text" name="contact1_title" class="form-input" placeholder="e.g. Owner"></div>
+                        </div>
+                        <div class="ob-row">
+                            <div class="form-group"><label class="form-label">Email *</label><input type="email" name="contact1_email" class="form-input" placeholder="name@company.com"></div>
+                            <div class="form-group"><label class="form-label">Phone *</label><input type="tel" name="contact1_phone" class="form-input" placeholder="(555) 000-0000"></div>
+                        </div>
+                    </div>
+                    <div class="ob-contact">
+                        <div class="ob-contact-title">Secondary Contact (optional)</div>
+                        <div class="ob-row">
+                            <div class="form-group"><label class="form-label">Full Name</label><input type="text" name="contact2_name" class="form-input" placeholder="First and last name"></div>
+                            <div class="form-group"><label class="form-label">Title / Role</label><input type="text" name="contact2_title" class="form-input" placeholder="e.g. Office Manager"></div>
+                        </div>
+                        <div class="ob-row">
+                            <div class="form-group"><label class="form-label">Email</label><input type="email" name="contact2_email" class="form-input" placeholder="name@company.com"></div>
+                            <div class="form-group"><label class="form-label">Phone</label><input type="tel" name="contact2_phone" class="form-input" placeholder="(555) 000-0000"></div>
+                        </div>
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: DIGITAL ACCOUNTS -->
+                <div class="ob-step" id="step-4">
+                    <div class="ob-step-header">
+                        <h2>Digital accounts & access</h2>
+                        <p>We'll need access to a few accounts based on your services.</p>
+                    </div>
+                    <div class="ob-note">
+                        <i class="ph-fill ph-globe"></i>
+                        <div><strong>New Website Included:</strong> We build a brand-new, optimized website for every client — no action needed from you on this.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Google Account Email *</label>
+                        <input type="email" name="google_email" class="form-input" placeholder="your@gmail.com — used for GBP, Analytics, Ads">
+                    </div>
+                    <!-- GBP -->
+                    <div class="ob-cond" data-service="local_seo">
+                        <hr class="ob-divider">
+                        <div class="ob-section-label"><i class="ph-fill ph-map-pin"></i> Google Business Profile</div>
+                        <div class="form-group">
+                            <label class="form-label">Do you have an existing Google Business Profile?</label>
+                            <select name="gbp_status" class="form-select" onchange="toggleGBP(this.value)">
+                                <option value="">Select one</option>
+                                <option value="yes">Yes — I have one</option>
+                                <option value="no">No — I need one created</option>
+                                <option value="unsure">I'm not sure</option>
+                            </select>
+                        </div>
+                        <div id="gbp-yes" style="display:none;">
+                            <div class="ob-note">
+                                <i class="ph-fill ph-user-plus"></i>
+                                <div>Please add <strong style="color:var(--accent-primary);">access@boostwithlaunchpad.com</strong> as a <strong>Manager</strong> on your Google Business Profile so our team can optimize it.</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Have you granted manager access?</label>
+                                <select name="gbp_access" class="form-select">
+                                    <option value="">Select one</option>
+                                    <option value="yes">Yes — access granted</option>
+                                    <option value="need_help">I need help doing this</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="gbp-create" style="display:none;">
+                            <div class="ob-note">
+                                <i class="ph-fill ph-info"></i>
+                                <div>No worries — we'll create your Google Business Profile. Please provide the details below.</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Business Hours</label>
+                                <div class="ob-hours-grid">
+                                    <label>Mon</label><input type="time" name="hours_mon_open" value="09:00"><input type="time" name="hours_mon_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_mon_closed" onchange="toggleClosed(this,'mon')"> Closed</label>
+                                    <label>Tue</label><input type="time" name="hours_tue_open" value="09:00"><input type="time" name="hours_tue_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_tue_closed" onchange="toggleClosed(this,'tue')"> Closed</label>
+                                    <label>Wed</label><input type="time" name="hours_wed_open" value="09:00"><input type="time" name="hours_wed_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_wed_closed" onchange="toggleClosed(this,'wed')"> Closed</label>
+                                    <label>Thu</label><input type="time" name="hours_thu_open" value="09:00"><input type="time" name="hours_thu_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_thu_closed" onchange="toggleClosed(this,'thu')"> Closed</label>
+                                    <label>Fri</label><input type="time" name="hours_fri_open" value="09:00"><input type="time" name="hours_fri_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_fri_closed" onchange="toggleClosed(this,'fri')"> Closed</label>
+                                    <label>Sat</label><input type="time" name="hours_sat_open" value="09:00"><input type="time" name="hours_sat_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_sat_closed" onchange="toggleClosed(this,'sat')"> Closed</label>
+                                    <label>Sun</label><input type="time" name="hours_sun_open" value="09:00"><input type="time" name="hours_sun_close" value="17:00"><label class="ob-closed-label"><input type="checkbox" name="hours_sun_closed" onchange="toggleClosed(this,'sun')"> Closed</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Full List of Services You Offer *</label>
+                                <textarea name="gbp_services" class="form-textarea" placeholder="List every service, one per line. e.g.&#10;Emergency Plumbing&#10;Drain Cleaning&#10;Water Heater Installation"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Do you have photos of your business, team, or work?</label>
+                                <select name="gbp_photos" class="form-select">
+                                    <option value="">Select one</option>
+                                    <option value="yes">Yes — I'll send them to assets@boostwithlaunchpad.com</option>
+                                    <option value="no">No — I don't have any yet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">License / Certification Number (if applicable)</label>
+                                <input type="text" name="license_number" class="form-input" placeholder="e.g. State contractor license, professional license">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Google Ads -->
+                    <div class="ob-cond" data-service="google_ads">
+                        <hr class="ob-divider">
+                        <div class="ob-section-label"><i class="ph-fill ph-google-logo"></i> Google Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">Existing Google Ads Account ID</label>
+                            <input type="text" name="google_ads_id" class="form-input" placeholder="e.g. 123-456-7890 (leave blank — we'll create one)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monthly Ad Budget (Google Ads) *</label>
+                            <input type="text" name="google_ads_budget" class="form-input" placeholder="e.g. $2,000/month">
+                        </div>
+                    </div>
+                    <!-- Meta Ads -->
+                    <div class="ob-cond" data-service="meta_ads">
+                        <hr class="ob-divider">
+                        <div class="ob-section-label"><i class="ph-fill ph-meta-logo"></i> Meta Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">Facebook Business Page URL</label>
+                            <input type="url" name="fb_page" class="form-input" placeholder="https://facebook.com/yourbusiness (blank if none)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Business Manager ID</label>
+                            <input type="text" name="meta_bm_id" class="form-input" placeholder="Leave blank if unsure — we'll set it up">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monthly Ad Budget (Meta Ads) *</label>
+                            <input type="text" name="meta_ads_budget" class="form-input" placeholder="e.g. $1,500/month">
+                        </div>
+                    </div>
+                    <!-- LSA -->
+                    <div class="ob-cond" data-service="lsa">
+                        <hr class="ob-divider">
+                        <div class="ob-section-label"><i class="ph-fill ph-shield-check"></i> Local Service Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">Do you have an existing LSA account?</label>
+                            <select name="lsa_status" class="form-select">
+                                <option value="">Select one</option>
+                                <option value="yes">Yes — active LSA account</option>
+                                <option value="no">No — I need one set up</option>
+                                <option value="unsure">I'm not sure</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monthly LSA Budget *</label>
+                            <input type="text" name="lsa_budget" class="form-input" placeholder="e.g. $1,000/month">
+                        </div>
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: SERVICE-SPECIFIC QUESTIONS -->
+                <div class="ob-step" id="step-5">
+                    <div class="ob-step-header">
+                        <h2>Service details</h2>
+                        <p>These questions help our team start immediately — no back-and-forth needed.</p>
+                    </div>
+                    <div class="ob-cond" data-service="local_seo">
+                        <div class="ob-section-label"><i class="ph-fill ph-map-pin"></i> Local SEO</div>
+                        <div class="form-group">
+                            <label class="form-label">What keywords do you want to rank for? *</label>
+                            <textarea name="seo_keywords" class="form-textarea" placeholder="List the searches you want to show up for, e.g.&#10;plumber near me&#10;emergency plumber Miami&#10;drain cleaning Fort Lauderdale"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Top 3 services to prioritize *</label>
+                            <input type="text" name="seo_top_services" class="form-input" placeholder="e.g. Emergency plumbing, AC repair, roof replacement">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Service area radius</label>
+                            <input type="text" name="seo_radius" class="form-input" placeholder="e.g. 25 miles, or list of cities/zip codes">
+                        </div>
+                        <hr class="ob-divider">
+                    </div>
+                    <div class="ob-cond" data-service="ai_seo">
+                        <div class="ob-section-label"><i class="ph-fill ph-brain"></i> AI SEO</div>
+                        <div class="form-group">
+                            <label class="form-label">Which AI platforms are most important to you?</label>
+                            <div class="ob-ai-grid">
+                                <label class="ob-ai-chip" onclick="toggleAI(event,this)">
+                                    <input type="checkbox" name="ai_platforms" value="chatgpt">
+                                    <div class="ob-ai-dot"><svg width="10" height="10" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                                    ChatGPT
+                                </label>
+                                <label class="ob-ai-chip" onclick="toggleAI(event,this)">
+                                    <input type="checkbox" name="ai_platforms" value="gemini">
+                                    <div class="ob-ai-dot"><svg width="10" height="10" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                                    Google Gemini
+                                </label>
+                                <label class="ob-ai-chip" onclick="toggleAI(event,this)">
+                                    <input type="checkbox" name="ai_platforms" value="perplexity">
+                                    <div class="ob-ai-dot"><svg width="10" height="10" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                                    Perplexity
+                                </label>
+                                <label class="ob-ai-chip" onclick="toggleAI(event,this)">
+                                    <input type="checkbox" name="ai_platforms" value="all">
+                                    <div class="ob-ai-dot"><svg width="10" height="10" fill="#fff" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                                    All of them
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">What questions should AI recommend you for? *</label>
+                            <textarea name="ai_queries" class="form-textarea" placeholder="What would someone ask AI that should lead to you? e.g.&#10;Who is the best plumber in Miami?&#10;Best dentist for implants near me"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Do you have a blog or content on your website?</label>
+                            <select name="ai_blog" class="form-select">
+                                <option value="">Select one</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="unsure">I'm not sure</option>
+                            </select>
+                        </div>
+                        <hr class="ob-divider">
+                    </div>
+                    <div class="ob-cond" data-service="lsa">
+                        <div class="ob-section-label"><i class="ph-fill ph-shield-check"></i> Local Service Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">What services should your LSA cover? *</label>
+                            <textarea name="lsa_services" class="form-textarea" placeholder="List the services for your LSA, e.g.&#10;Plumbing repair&#10;Drain cleaning&#10;Water heater installation"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hours available to take LSA calls *</label>
+                            <input type="text" name="lsa_hours" class="form-input" placeholder="e.g. Mon-Fri 8am-6pm, Sat 9am-2pm">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">License / Certification (required for Google Guaranteed)</label>
+                            <input type="text" name="lsa_license" class="form-input" placeholder="License type and number — or 'I need help'">
+                        </div>
+                        <hr class="ob-divider">
+                    </div>
+                    <div class="ob-cond" data-service="google_ads">
+                        <div class="ob-section-label"><i class="ph-fill ph-google-logo"></i> Google Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">Target keywords or search terms *</label>
+                            <textarea name="gads_keywords" class="form-textarea" placeholder="What should people search to see your ad? e.g.&#10;plumber near me&#10;emergency AC repair&#10;divorce attorney Miami"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">What's a qualified lead worth to you?</label>
+                            <input type="text" name="gads_lead_value" class="form-input" placeholder="e.g. $200, $500, or 'I'm not sure'">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Geographic targeting</label>
+                            <input type="text" name="gads_geo" class="form-input" placeholder="e.g. 30 mile radius, or specific cities/zip codes">
+                        </div>
+                        <hr class="ob-divider">
+                    </div>
+                    <div class="ob-cond" data-service="meta_ads">
+                        <div class="ob-section-label"><i class="ph-fill ph-meta-logo"></i> Meta Ads</div>
+                        <div class="form-group">
+                            <label class="form-label">Primary campaign goal *</label>
+                            <select name="meta_goal" class="form-select">
+                                <option value="">Select one</option>
+                                <option value="leads">Lead generation (form fills)</option>
+                                <option value="calls">Phone calls</option>
+                                <option value="bookings">Bookings / appointments</option>
+                                <option value="awareness">Brand awareness</option>
+                                <option value="unsure">Not sure — recommend what works</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Describe your ideal customer *</label>
+                            <textarea name="meta_audience" class="form-textarea" placeholder="Who are you trying to reach? e.g.&#10;Homeowners age 30-60 in Miami-Dade&#10;Women 25-45 interested in cosmetic dentistry"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Do you have existing ad creative (images/videos)?</label>
+                            <select name="meta_creative" class="form-select">
+                                <option value="">Select one</option>
+                                <option value="yes">Yes — I'll send to assets@boostwithlaunchpad.com</option>
+                                <option value="no">No — I need creative produced</option>
+                                <option value="some">I have some, but need more</option>
+                            </select>
+                        </div>
+                        <hr class="ob-divider">
+                    </div>
+                    <div id="no-svc-msg" style="display:none; text-align:center; padding:2rem 0; color:var(--text-muted);">
+                        <i class="ph-fill ph-arrow-left" style="font-size:2rem; display:block; margin-bottom:0.5rem;"></i>
+                        Please go back and select your services first.
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 6: BRAND -->
+                <div class="ob-step" id="step-6">
+                    <div class="ob-step-header">
+                        <h2>Brand & assets</h2>
+                        <p>We build a new website for every client. These details help us get it right.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Brand Colors</label>
+                        <input type="text" name="brand_colors" class="form-input" placeholder="e.g. Navy #1B2A4A, Gold #D4A843 — or 'no preference'">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Do you have a high-res logo?</label>
+                        <select name="logo_status" class="form-select">
+                            <option value="">Select one</option>
+                            <option value="yes">Yes — I'll send to assets@boostwithlaunchpad.com</option>
+                            <option value="on_website">It's on my current website</option>
+                            <option value="no">No — I need a logo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Do you have photos of your business, team, or work?</label>
+                        <select name="media_status" class="form-select">
+                            <option value="">Select one</option>
+                            <option value="yes">Yes — I'll send to assets@boostwithlaunchpad.com</option>
+                            <option value="no">No — I don't have any</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Any brand guidelines, style preferences, or things to avoid?</label>
+                        <textarea name="brand_notes" class="form-textarea" placeholder="Tone of voice, colors you hate, competitor styles you like, etc."></textarea>
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 7: GOALS -->
+                <div class="ob-step" id="step-7">
+                    <div class="ob-step-header">
+                        <h2>Goals & competitors</h2>
+                        <p>What does success look like for your business?</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">What are your top 3 goals? *</label>
+                        <textarea name="goals" class="form-textarea" placeholder="e.g.&#10;Get 50+ leads per month&#10;Rank #1 for 'plumber near me'&#10;Cut my cost per lead in half"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Top competitors</label>
+                        <textarea name="competitors" class="form-textarea" placeholder="List competitor names or websites, e.g.&#10;ABC Plumbing — abcplumbing.com&#10;123 Heating — they always rank above us"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Anything seasonal or time-sensitive?</label>
+                        <input type="text" name="seasonal" class="form-input" placeholder="e.g. AC season May-Sept, holiday rush in Dec">
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-next" onclick="nextStep()">Next Step →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 8: FINAL -->
+                <div class="ob-step" id="step-8">
+                    <div class="ob-step-header">
+                        <h2>Final details</h2>
+                        <p>Almost done — just a few more things so we can hit the ground running.</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Who should receive weekly performance reports? *</label>
+                        <input type="text" name="report_recipients" class="form-input" placeholder="Email addresses separated by commas">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Do we need your approval before publishing content or launching ads?</label>
+                        <select name="approval_process" class="form-select">
+                            <option value="">Select one</option>
+                            <option value="yes_always">Yes — always get approval first</option>
+                            <option value="major_only">Only for major changes or new campaigns</option>
+                            <option value="no">No — I trust your team to run it</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Anything else we should know?</label>
+                        <textarea name="additional_notes" class="form-textarea" placeholder="Past marketing experiences, things that didn't work before, expectations, etc."></textarea>
+                    </div>
+                    <div class="ob-note">
+                        <i class="ph-fill ph-check-circle"></i>
+                        <div><strong>What happens next:</strong> Your account manager will review everything and begin setup. You'll get a welcome call within 24-48 hours and your first weekly report within 7 days of launch.</div>
+                    </div>
+                    <div class="ob-btns">
+                        <button type="button" class="ob-btn-back" onclick="prevStep()">← Back</button>
+                        <button type="button" class="ob-btn-submit" onclick="submitOB()">Submit Onboarding →</button>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- SUCCESS -->
+            <div class="ob-success" id="obSuccess">
+                <div class="ob-success-icon">
+                    <i class="ph-fill ph-check" style="font-size: 2.25rem;"></i>
+                </div>
+                <h2>You're all set!</h2>
+                <p style="margin-bottom: 1rem;">Your onboarding information has been submitted. Our team is getting started now.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    <strong>Next steps:</strong><br>
+                    1. Check your inbox for the DocuSign service agreement<br>
+                    2. Send any brand assets to <a href="mailto:assets@boostwithlaunchpad.com" style="color: var(--accent-primary);">assets@boostwithlaunchpad.com</a><br>
+                    3. Your account manager will reach out within 24-48 hours
+                </p>
+                <div style="margin-top: 1.5rem;">
+                    <a href="index.html" class="btn btn-outline" style="display: inline-flex;">← Back to Launchpad Boost</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentStep = 1;
+        var totalSteps = 8;
+        var stepNames = ['', 'Business Information', 'Service Selection', 'Key Contacts', 'Accounts & Access', 'Service Details', 'Brand & Assets', 'Goals & Competitors', 'Final Details'];
+
+        function updateProgress() {
+            document.getElementById('progressBar').style.width = ((currentStep / totalSteps) * 100) + '%';
+            document.getElementById('stepLabel').textContent = 'Step ' + currentStep + ' of ' + totalSteps;
+            document.getElementById('stepName').textContent = stepNames[currentStep];
+        }
+
+        function showStep(n) {
+            document.querySelectorAll('.ob-step').forEach(function(s) { s.classList.remove('active'); });
+            var el = document.getElementById('step-' + n);
+            if (el) el.classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                if (currentStep === 2) updateCond();
+                currentStep++;
+                showStep(currentStep);
+                if (currentStep === 5) {
+                    var any = document.querySelectorAll('.ob-svc-chip.active').length > 0;
+                    var msg = document.getElementById('no-svc-msg');
+                    if (msg) msg.style.display = any ? 'none' : 'block';
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) { currentStep--; showStep(currentStep); }
+        }
+
+        function toggleSvc(event, el) {
+            event.preventDefault();
+            el.classList.toggle('active');
+            var cb = el.querySelector('input');
+            cb.checked = !cb.checked;
+        }
+
+        function toggleAI(event, el) {
+            event.preventDefault();
+            el.classList.toggle('active');
+            var cb = el.querySelector('input');
+            cb.checked = !cb.checked;
+        }
+
+        function updateCond() {
+            var sel = [];
+            document.querySelectorAll('.ob-svc-chip.active input').forEach(function(cb) { sel.push(cb.value); });
+            document.querySelectorAll('.ob-cond').forEach(function(s) {
+                s.classList.toggle('visible', sel.indexOf(s.dataset.service) !== -1);
+            });
+        }
+
+        function toggleGBP(val) {
+            document.getElementById('gbp-yes').style.display = (val === 'yes') ? 'block' : 'none';
+            document.getElementById('gbp-create').style.display = (val === 'no' || val === 'unsure') ? 'block' : 'none';
+        }
+
+        function toggleDomain(val) {
+            document.getElementById('domainYes').classList.toggle('visible', val === 'yes');
+            document.getElementById('domainNo').classList.toggle('visible', val === 'no');
+        }
+
+        function toggleClosed(cb, day) {
+            var o = document.querySelector('input[name="hours_' + day + '_open"]');
+            var c = document.querySelector('input[name="hours_' + day + '_close"]');
+            o.disabled = cb.checked; o.style.opacity = cb.checked ? '0.3' : '1';
+            c.disabled = cb.checked; c.style.opacity = cb.checked ? '0.3' : '1';
+        }
+
+        function submitOB() {
+            updateCond();
+            var form = document.getElementById('obForm');
+            var data = new FormData(form);
+            var btn = document.querySelector('.ob-btn-submit');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            fetch('/onboarding.html', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(data).toString()
+            }).then(function() {
+                form.style.display = 'none';
+                document.getElementById('obSuccess').style.display = 'block';
+                document.querySelector('.ob-progress').style.display = 'none';
+            }).catch(function() {
+                alert('Something went wrong. Please try again or email support@boostwithlaunchpad.com');
+                btn.disabled = false;
+                btn.textContent = 'Submit Onboarding →';
+            });
+        }
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Launchpad Boost</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-view { display: none; }
+        .admin-view.active { display: block; }
+        .nav-item {
+            justify-content: flex-start;
+            border-color: transparent;
+            color: #94A3B8;
+            cursor: pointer;
+        }
+        .nav-item.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        .nav-item:hover { color: white; }
+        body > header { display: none; }
+        .admin-main header { display: block !important; position: relative; height: auto; background: transparent; border: none; }
+    </style>
+</head>
+
+<body style="background-color: var(--bg-surface);">
+
+    <div id="loginOverlay" style="position: fixed; inset: 0; background: #0F172A; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="form-card" style="width: 100%; max-width: 400px; padding: 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="display:flex;justify-content:center;margin-bottom:1rem;"><img src="launchpad_boost_logo.svg" alt="Admin" style="height:44px;width:220px;display:block;"></div>
+                <h2 style="color: var(--text-primary);">Admin Access</h2>
+            </div>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="adminPass" class="form-input" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addModal" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.8); z-index: 1500; align-items: center; justify-content: center; padding: 1rem;">
+        <div class="form-card" style="width: 100%; max-width: 500px; padding: 1.5rem; position: relative;">
+            <button onclick="closeAddModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
+            <!-- Add Form -->
+            <div id="addFormView">
+                <h2 class="mb-2">Add Client</h2>
+                <form onsubmit="manualAddSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Business Name</label>
+                        <input type="text" name="businessName" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" name="city" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="ph-bold ph-plus" style="margin-right: 0.5rem;"></i> Add Client & Generate Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Password Reveal (shown after creation) -->
+            <div id="addSuccessView" style="display: none; text-align: center;">
+                <div style="width: 56px; height: 56px; background: #DCFCE7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="ph-fill ph-check" style="font-size: 1.5rem;"></i>
+                </div>
+                <h2 style="margin-bottom: 0.5rem;">Client Added!</h2>
+                <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">Share these credentials with your client.</p>
+
+                <div style="background: #F8FAFC; border: 1px solid var(--border-strong); border-radius: var(--radius-main); padding: 1.25rem; margin-bottom: 1.5rem; text-align: left;">
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Client Name (login)</div>
+                        <div id="revealClientName" style="font-weight: 700; font-size: 1rem; color: var(--text-primary);"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Generated Password</div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div id="revealPassword" style="font-family: monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: 1px;"></div>
+                            <button onclick="copyRevealedPassword()" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; width: auto;">
+                                <i class="ph-bold ph-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.8rem; color: #F59E0B; display: flex; align-items: flex-start; gap: 0.4rem; text-align: left; margin-bottom: 1.5rem;">
+                    <i class="ph-fill ph-warning" style="flex-shrink: 0; margin-top: 2px;"></i>
+                    Copy this password now — you won't be able to retrieve it again.
+                </p>
+
+                <button onclick="closeAddModal()" class="btn btn-primary" style="width: 100%;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-sidebar" id="adminSidebar">
+        <div style="margin-bottom: 1rem;">
+            <img src="launchpad_boost_logo.svg" alt="Logo" style="height: 32px; filter: brightness(0) invert(1);">
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div onclick="switchAdminView('overview')" class="btn btn-outline nav-item active" id="nav-overview">
+                <i class="ph-fill ph-users"></i> <span>Profiles</span>
+            </div>
+            <div onclick="switchAdminView('submissions')" class="btn btn-outline nav-item" id="nav-submissions">
+                <i class="ph-fill ph-clipboard-text"></i> <span>Submissions</span>
+            </div>
+            <div onclick="switchAdminView('newsletter')" class="btn btn-outline nav-item" id="nav-newsletter">
+                <i class="ph-fill ph-envelope-simple"></i> <span>Newsletter</span>
+            </div>
+            <div onclick="switchAdminView('analytics')" class="btn btn-outline nav-item" id="nav-analytics">
+                <i class="ph-fill ph-chart-line-up"></i> <span>Analytics</span>
+            </div>
+            <div onclick="adminLogout()" class="btn btn-outline nav-item" style="margin-top: 1rem;">
+                <i class="ph-fill ph-sign-out"></i> <span>Logout</span>
+            </div>
+        </nav>
+    </div>
+
+    <div class="admin-main" id="adminMain">
+
+        <div id="view-overview" class="admin-view active">
+            <header style="padding: 1rem 0; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <h1 style="font-size: 1.5rem;">Overview</h1>
+                    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; width: 100%;">
+                        <input type="text" class="form-input" placeholder="Search..." style="flex: 1; min-width: 150px; background: white;">
+                        <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='flex'" style="white-space: nowrap;">
+                            <i class="ph-bold ph-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid-3" style="gap: 1rem; margin-bottom: 1.5rem; margin-top: 0;">
+                <div class="card" style="padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: #DCFCE7; color: #166534; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="ph-fill ph-users" style="font-size: 1.25rem;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted" style="font-size: 0.8rem;">Active</div>
+                        <div style="font-weight: 700; font-size: 1.25rem;" id="activeCount">0</div>
+                    </div>
+                </div>
+                <div class="card" style="padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 40px; height: 40px; background: #E0E7FF; color: #3730A3; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="ph-fill ph-chart-bar" style="font-size: 1.25rem;"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted" style="font-size: 0.8rem;">Keywords</div>
+                        <div style="font-weight: 700; font-size: 1.25rem;" id="keywordCount">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 1rem; border-bottom: 1px solid var(--border-light); font-weight: 600;">
+                    Recent Submissions
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 500px;">
+                        <thead style="background: #F8FAFC; color: var(--text-secondary); text-align: left;">
+                            <tr>
+                                <th style="padding: 0.75rem; font-weight: 500;">Business</th>
+                                <th style="padding: 0.75rem; font-weight: 500;">Category</th>
+                                <th style="padding: 0.75rem; font-weight: 500;">Location</th>
+                                <th style="padding: 0.75rem; font-weight: 500;">Password</th>
+                                <th style="padding: 0.75rem; font-weight: 500;">Status</th>
+                                <th style="padding: 0.75rem; font-weight: 500;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="businessTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="emptyState" style="padding: 3rem 1rem; text-align: center; display: none;">
+                    <div style="width: 56px; height: 56px; background: #F1F5F9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--text-muted);">
+                        <i class="ph-fill ph-tray" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">No Profiles Yet</h3>
+                    <p class="text-muted" style="font-size: 0.85rem;">Go through the onboarding flow to create the first record.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-submissions" class="admin-view">
+            <header style="padding: 1rem 0; margin-bottom: 1.5rem;">
+                <h1 style="font-size: 1.5rem;">Client Submissions</h1>
+            </header>
+            <div id="submissionsContainer">
+                <p class="text-muted" style="text-align:center; padding: 2rem;">Loading submissions...</p>
+            </div>
+            <div class="card" style="margin-top: 2rem; padding: 1.5rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.5rem;">
+                    <i class="ph-fill ph-envelope-simple text-accent"></i> Weekly Report Email Signups
+                </h3>
+                <div id="emailSignupsContainer">
+                    <p class="text-muted" style="font-size:0.875rem;">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-newsletter" class="admin-view">
+            <header style="padding: 1rem 0; margin-bottom: 1.5rem;">
+                <h1 style="font-size: 1.5rem;">Weekly Newsletter</h1>
+            </header>
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">Subject Line</label>
+                    <input type="text" class="form-input" value="Your Weekly Rank Report">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Body Content</label>
+                    <textarea class="form-textarea" rows="6">Hi {{businessName}},
+
+Here is your optimization report for this week. We have secured 5 new local citations and optimized your GMB profile description.
+
+Your keyword rankings are trending up!
+
+- Launchpad Boost Team</textarea>
+                    <p class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Variables: {{businessName}}, {{city}}</p>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Newsletter sent!')" style="width: 100%;">
+                    <i class="ph-bold ph-paper-plane-right" style="margin-right: 0.5rem;"></i> Send Now
+                </button>
+            </div>
+        </div>
+
+        <div id="view-analytics" class="admin-view">
+            <header style="padding: 1rem 0; margin-bottom: 1.5rem;">
+                <h1 style="font-size: 1.5rem;">Platform Analytics</h1>
+            </header>
+            <div class="grid-3">
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: var(--accent-primary); margin-bottom: 0.5rem;">98%</h3>
+                    <p class="text-muted">Retention Rate</p>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: #10B981; margin-bottom: 0.5rem;">$15k</h3>
+                    <p class="text-muted">Monthly Revenue</p>
+                </div>
+                <div class="card" style="padding: 1.5rem; text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: #F59E0B; margin-bottom: 0.5rem;">12.5%</h3>
+                    <p class="text-muted">Conversion Rate</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('adminAuth') === 'true') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                loadDashboard();
+            }
+        });
+    </script>
+</body>
+
+</html>

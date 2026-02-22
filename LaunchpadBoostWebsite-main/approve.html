@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Proposal | Launchpad Internal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .approve-card { max-width: 650px; margin: 0 auto; }
+        .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .svc-checks { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem; }
+        .svc-check-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 0.75rem; background: #F8FAFC; border: 1px solid #F1F5F9;
+            border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+        }
+        .svc-check-item:hover { border-color: #E2E8F0; }
+        .svc-check-item input { accent-color: #7C3AED; width: 16px; height: 16px; }
+        .svc-check-item.checked { background: rgba(124,58,237,0.05); border-color: #7C3AED; }
+        .internal-badge {
+            background: #FEF3C7; color: #92400E; font-size: 0.75rem; font-weight: 700;
+            padding: 0.25rem 0.75rem; border-radius: 20px; display: inline-flex;
+            align-items: center; gap: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .price-row { display: flex; align-items: center; gap: 0.5rem; }
+        .price-row span { font-size: 1.5rem; font-weight: 700; color: #0F172A; }
+        @media (max-width: 768px) { .field-grid { grid-template-columns: 1fr; } .svc-checks { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body style="background-color: var(--bg-surface);">
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="launchpad_boost_logo.svg" alt="Launchpad Boost" class="logo-img" style="height:44px;width:auto;display:block;">
+            </a>
+            <div class="internal-badge"><i class="ph-fill ph-lock-key"></i> Internal Only</div>
+        </div>
+    </header>
+
+    <div style="padding-top: 90px; padding-bottom: 2rem;">
+        <div class="form-card approve-card" id="formView">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="ph-fill ph-seal-check" style="font-size: 2.5rem; color: #7C3AED;"></i>
+                <h1 style="font-size: 1.5rem; margin: 0.5rem 0 0.25rem;">Approve & Send Proposal</h1>
+                <p class="text-muted" style="font-size: 0.9rem;">Review the AI-recommended details. Edit if needed, then approve.</p>
+            </div>
+
+            <div style="background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.15); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="font-size: 0.85rem; color: #7C3AED; font-weight: 600; margin-bottom: 0.25rem;"><i class="ph-fill ph-info"></i> What happens when you approve:</p>
+                <p class="text-muted" style="font-size: 0.85rem; line-height: 1.5;">A Stripe payment link is created and emailed to the client with the proposal. Once they pay, they automatically receive the onboarding form and DocuSign service agreement.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Client Business Name</label>
+                <input type="text" id="client_name" class="form-input" placeholder="e.g. Bright Smiles Dental">
+            </div>
+
+            <div class="field-grid">
+                <div class="form-group">
+                    <label class="form-label">Client Email</label>
+                    <input type="email" id="client_email" class="form-input" placeholder="client@company.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client Contact Name</label>
+                    <input type="text" id="client_contact" class="form-input" placeholder="e.g. Dr. Sarah Kim">
+                </div>
+            </div>
+
+            <div class="field-grid">
+                <div class="form-group">
+                    <label class="form-label">Client Phone</label>
+                    <input type="tel" id="client_phone" class="form-input" placeholder="(555) 000-0000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client Address</label>
+                    <input type="text" id="client_address" class="form-input" placeholder="123 Main St">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">City, State, ZIP</label>
+                <input type="text" id="client_city_state_zip" class="form-input" placeholder="e.g. Miami, FL 33101">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Services</label>
+                <div class="svc-checks">
+                    <label class="svc-check-item"><input type="checkbox" value="Local SEO" onchange="toggleCheck(this)"> Local SEO</label>
+                    <label class="svc-check-item"><input type="checkbox" value="AI SEO" onchange="toggleCheck(this)"> AI SEO</label>
+                    <label class="svc-check-item"><input type="checkbox" value="LSA" onchange="toggleCheck(this)"> LSA</label>
+                    <label class="svc-check-item"><input type="checkbox" value="Google Ads" onchange="toggleCheck(this)"> Google Ads</label>
+                    <label class="svc-check-item"><input type="checkbox" value="Meta Ads" onchange="toggleCheck(this)"> Meta Ads</label>
+                    <label class="svc-check-item"><input type="checkbox" value="Website Design" onchange="toggleCheck(this)"> Website Design</label>
+                    <label class="svc-check-item"><input type="checkbox" value="AI Agents" onchange="toggleCheck(this)"> AI Agents</label>
+                    <label class="svc-check-item"><input type="checkbox" value="CRM Development" onchange="toggleCheck(this)"> CRM Development</label>
+                    <label class="svc-check-item"><input type="checkbox" value="Workflow Automation" onchange="toggleCheck(this)"> Workflow Automation</label>
+                    <label class="svc-check-item"><input type="checkbox" value="Chatbot / Voice AI" onchange="toggleCheck(this)"> Chatbot / Voice AI</label>
+                </div>
+            </div>
+
+            <div class="field-grid">
+                <div class="form-group">
+                    <label class="form-label">Monthly Price ($)</label>
+                    <div class="price-row">
+                        <span>$</span>
+                        <input type="number" id="monthly_price" class="form-input" placeholder="3500" style="font-size: 1.25rem; font-weight: 600;">
+                        <span style="font-size: 0.9rem; font-weight: 400; color: #64748B;">/mo</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Setup Fee ($)</label>
+                    <div class="price-row">
+                        <span>$</span>
+                        <input type="number" id="setup_price" class="form-input" placeholder="1000" style="font-size: 1.25rem; font-weight: 600;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">AI Meeting Summary</label>
+                <textarea id="summary" class="form-textarea" rows="4" placeholder="Auto-filled from AI analysis..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Proposal Text (sent to client)</label>
+                <textarea id="proposal" class="form-textarea" rows="5" placeholder="Auto-filled proposal text..."></textarea>
+            </div>
+
+            <button onclick="submitApproval()" class="btn btn-gradient" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem;">
+                <i class="ph-bold ph-paper-plane-right" style="margin-right: 0.5rem;"></i> Approve & Send to Client
+            </button>
+        </div>
+
+        <div class="form-card approve-card" id="successView" style="display: none; text-align: center;">
+            <div style="width: 72px; height: 72px; background: #DCFCE7; color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="ph-fill ph-check" style="font-size: 2.25rem;"></i>
+            </div>
+            <h2 style="margin-bottom: 0.5rem;">Proposal Approved & Sent!</h2>
+            <p class="text-muted" style="margin-bottom: 1.5rem;">The client will receive their proposal and payment link via email. Once they pay, onboarding and service agreement are sent automatically.</p>
+            <p id="sentTo" style="font-weight: 600; color: #7C3AED;"></p>
+        </div>
+    </div>
+
+    <script>
+        // Pre-fill from URL params (sent from Seb's email link)
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('client_name')) document.getElementById('client_name').value = decodeURIComponent(params.get('client_name'));
+        if (params.get('client_email')) document.getElementById('client_email').value = decodeURIComponent(params.get('client_email'));
+        if (params.get('client_contact')) document.getElementById('client_contact').value = decodeURIComponent(params.get('client_contact'));
+        if (params.get('client_phone')) document.getElementById('client_phone').value = decodeURIComponent(params.get('client_phone'));
+        if (params.get('client_address')) document.getElementById('client_address').value = decodeURIComponent(params.get('client_address'));
+        if (params.get('client_city_state_zip')) document.getElementById('client_city_state_zip').value = decodeURIComponent(params.get('client_city_state_zip'));
+        if (params.get('monthly_price')) document.getElementById('monthly_price').value = params.get('monthly_price');
+        if (params.get('setup_price')) document.getElementById('setup_price').value = params.get('setup_price');
+        if (params.get('summary')) document.getElementById('summary').value = decodeURIComponent(params.get('summary'));
+        if (params.get('proposal')) document.getElementById('proposal').value = decodeURIComponent(params.get('proposal'));
+        if (params.get('services')) {
+            var svcs = decodeURIComponent(params.get('services')).split(',');
+            document.querySelectorAll('.svc-check-item input').forEach(function(cb) {
+                if (svcs.some(function(s) { return s.trim() === cb.value; })) {
+                    cb.checked = true;
+                    cb.closest('.svc-check-item').classList.add('checked');
+                }
+            });
+        }
+
+        function toggleCheck(cb) {
+            cb.closest('.svc-check-item').classList.toggle('checked', cb.checked);
+        }
+
+        function submitApproval() {
+            var services = [];
+            document.querySelectorAll('.svc-check-item input:checked').forEach(function(cb) { services.push(cb.value); });
+
+            var data = {
+                client_name: document.getElementById('client_name').value,
+                client_email: document.getElementById('client_email').value,
+                client_contact: document.getElementById('client_contact').value,
+                client_phone: document.getElementById('client_phone').value,
+                client_address: document.getElementById('client_address').value,
+                client_city_state_zip: document.getElementById('client_city_state_zip').value,
+                services: services.join(', '),
+                monthly_price: document.getElementById('monthly_price').value,
+                setup_price: document.getElementById('setup_price').value,
+                summary: document.getElementById('summary').value,
+                proposal: document.getElementById('proposal').value
+            };
+
+            if (!data.client_name || !data.client_email || !data.monthly_price) {
+                alert('Please fill in client name, email, and monthly price.');
+                return;
+            }
+
+            var btn = document.querySelector('.btn-gradient');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin" style="margin-right:0.5rem;"></i> Sending...';
+
+            fetch('https://launchpadadmin.app.n8n.cloud/webhook/245b41db-fafc-45f5-adcd-a7225ab073d8', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function() {
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+                document.getElementById('sentTo').textContent = 'Payment link sent to: ' + data.client_email;
+            })
+            .catch(function() {
+                alert('Error sending approval. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph-bold ph-paper-plane-right" style="margin-right:0.5rem;"></i> Approve & Send to Client';
+            });
+        }
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>

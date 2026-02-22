@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Launchpad Boost</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="launchpad_boost_logo.svg" alt="Launchpad Boost" class="logo-img" style="height:44px;width:auto;display:block;">
+            </a>
+            <div class="nav-links">
+                <a href="admin.html">Admin</a>
+                <a href="features.html">Services</a>
+                <a href="reviews.html">Reviews</a>
+                <a href="contact.html" class="btn btn-primary mobile-cta">Get Started</a>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="contact.html" class="btn btn-primary">Get Started</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Get In Touch</h1>
+            <p class="text-muted" style="font-size: 1.25rem; max-width: 600px; margin: 0 auto 2.5rem;">
+                Ready to grow your business? Let's talk about which services are right for you.
+            </p>
+        </div>
+    </section>
+
+    <section style="background: var(--bg-surface);">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="grid-3">
+                    <div class="card" style="text-align: center;">
+                        <div style="width: 56px; height: 56px; background: rgba(124, 58, 237, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="ph-fill ph-envelope text-accent" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="margin-bottom: 0.75rem;">Email Us</h3>
+                        <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.9rem;">Our team typically responds within 24 hours</p>
+                        <a href="mailto:support@boostwithlaunchpad.com" style="color: var(--accent-primary); font-weight: 600; font-size: 0.95rem; word-break: break-all;">
+                            support@boostwithlaunchpad.com
+                        </a>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="width: 56px; height: 56px; background: rgba(124, 58, 237, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="ph-fill ph-clock text-accent" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="margin-bottom: 0.75rem;">Support Hours</h3>
+                        <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">Mon - Fri: 9am - 6pm EST</p>
+                        <p class="text-muted" style="font-size: 0.9rem;">Sat - Sun: 10am - 4pm EST</p>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="width: 56px; height: 56px; background: rgba(124, 58, 237, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="ph-fill ph-chat-circle-text text-accent" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h3 style="margin-bottom: 0.75rem;">Quick Response</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">For urgent matters, mention "URGENT" in your subject line</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="text-center mb-2">
+                    <h2>Send Us a Message</h2>
+                    <p class="text-muted">Tell us about your business and what you're looking for. We'll get back to you within 24 hours.</p>
+                </div>
+
+                <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="card">
+                    <input type="hidden" name="form-name" value="contact">
+                    <p style="display: none;">
+                        <label>Don't fill this out: <input name="bot-field" /></label>
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What services are you interested in?</label>
+                        <select name="service_interest" class="form-input" style="background: white;">
+                            <option value="">Select...</option>
+                            <option value="seo">Local SEO</option>
+                            <option value="ai_seo">AI SEO</option>
+                            <option value="lsa">Local Service Ads (LSA)</option>
+                            <option value="google_ads">Google Ads</option>
+                            <option value="meta_ads">Meta Ads</option>
+                            <option value="multiple">Multiple Services</option>
+                            <option value="not_sure">Not Sure Yet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" class="form-textarea" rows="5" required placeholder="Tell us about your business and goals..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--bg-surface);">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="text-center mb-2">
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+
+                <div class="grid-3" style="grid-template-columns: 1fr;">
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.75rem; font-size: 1rem;">How quickly will I see results?</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">It depends on the service. Google Ads and Meta Ads can produce leads within days of launching. SEO and AI SEO typically show meaningful results within 30-90 days. LSA campaigns usually generate leads within the first week.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.75rem; font-size: 1rem;">Do I need to sign a long-term contract?</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">We offer flexible terms. You can cancel anytime with no penalties. We earn your business every month with results, not contracts.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.75rem; font-size: 1rem;">Can I combine multiple services?</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">Absolutely — most of our clients use 2-3 services together. We'll recommend the best combination based on your industry, budget, and goals.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 0.75rem; font-size: 1rem;">What industries do you work with?</h3>
+                        <p class="text-muted" style="font-size: 0.9rem;">We specialize in local businesses and service-based industries including legal, healthcare, home services, education, automotive, restaurants, and more.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Launchpad Boost</h4>
+                    <p>Full-service digital marketing — SEO, ads, and AI-powered growth — built for businesses that need results.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <a href="features.html">All Services</a>
+                    <a href="reviews.html">Reviews</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <a href="contact.html">Get In Touch</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 Launchpad Boost. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
