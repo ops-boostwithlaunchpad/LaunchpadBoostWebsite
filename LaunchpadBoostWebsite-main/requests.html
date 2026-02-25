@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests Dashboard | Launchpad Boost</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-container {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .auth-card {
+            max-width: 400px;
+            margin: 4rem auto;
+            text-align: center;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .submissions-table th,
+        .submissions-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .submissions-table th {
+            background: #F8FAFC;
+            color: #64748B;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-enabled {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .status-disabled {
+            background: #F1F5F9;
+            color: #475569;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border-strong);
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body style="background: #F1F5F9;">
+    <div id="authPanel" class="auth-card">
+        <div
+            style="width: 60px; height: 60px; background: rgba(124, 58, 237, 0.1); color: var(--accent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+            <i class="ph-bold ph-key" style="font-size: 1.75rem;"></i>
+        </div>
+        <h2 style="margin-bottom: 0.5rem;">Admin Dashboard</h2>
+        <p style="color: #64748B; font-size: 0.9rem; margin-bottom: 2rem;">Enter your 4-digit access code.</p>
+        <div class="form-group">
+            <input type="password" id="pinInput" class="form-input" maxlength="4" placeholder="••••"
+                style="text-align: center; letter-spacing: 0.5rem; font-size: 1.75rem; border: 2px solid #E2E8F0; border-radius: 12px; height: 60px;">
+        </div>
+        <button onclick="checkPin()" class="btn btn-primary"
+            style="width: 100%; height: 50px; margin-top: 1rem; border-radius: 12px;">Unlock Now</button>
+        <p id="authError"
+            style="color: #EF4444; font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 500;">Incorrect
+            PIN. Access Denied.</p>
+    </div>
+
+    <div id="dashboardPanel" class="dashboard-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div>
+                <h1 style="font-size: 2rem; color: #0F172A;">Client Requests</h1>
+                <p style="color: #64748B;">Manage your onboarding submissions and meetings.</p>
+            </div>
+            <button onclick="logout()" class="btn btn-outline"
+                style="padding: 0.6rem 1.25rem; border-radius: 10px;">Sign Out</button>
+        </div>
+
+        <div style="background: white; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden;">
+            <div style="overflow-x: auto;">
+                <table class="submissions-table" style="margin-top: 0; box-shadow: none;">
+                    <thead>
+                        <tr>
+                            <th>Received On</th>
+                            <th>Business Name</th>
+                            <th>Email Address</th>
+                            <th>Service Type</th>
+                            <th>Meet Access</th>
+                            <th style="text-align: right;">Internal Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === '1212') {
+                document.getElementById('authPanel').style.display = 'none';
+                document.getElementById('dashboardPanel').style.display = 'block';
+                loadSubmissions();
+            } else {
+                document.getElementById('authError').style.display = 'block';
+            }
+        }
+
+        function loadSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('launchpad_submissions') || '[]');
+            const list = document.getElementById('submissionsList');
+            list.innerHTML = '';
+
+            if (submissions.length === 0) {
+                list.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 4rem; color: #64748B;">No submissions found in the database.</td></tr>';
+                return;
+            }
+
+            submissions.reverse().forEach(sub => {
+                const row = document.createElement('tr');
+                const date = new Date(sub.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const meetStatus = sub.meetEnabled
+                    ? '<span class="status-badge status-enabled"><i class="ph ph-check"></i> Enabled</span>'
+                    : '<span class="status-badge status-disabled">Locked</span>';
+
+                const meetAction = sub.meetEnabled
+                    ? `<button onclick="scheduleMeeting('${sub.id}', '${sub.email || sub.contact1_email}')" class="btn btn-primary btn-sm" style="box-shadow: 0 4px 6px -1px var(--accent-dim);">Schedule Now</button>`
+                    : `<button disabled class="btn btn-outline btn-sm" style="opacity: 0.4; cursor: not-allowed;">Awaiting Link</button>`;
+
+                // Handle both Onboarding and Contact form fields
+                const displayName = sub.business_name || sub.businessName || sub.agency || sub.name || 'N/A';
+                const displayEmail = sub.email || sub.contact1_email || 'N/A';
+                const displayType = sub.industry || sub.category || sub.service_interest || (sub.agency ? 'Agency Inquiry' : 'General Message');
+
+                row.innerHTML = `
+                    <td style="color: #64748B;">${date}</td>
+                    <td><strong>${displayName}</strong></td>
+                    <td>${displayEmail}</td>
+                    <td><span style="font-size: 0.85rem; padding: 0.2rem 0.5rem; background: #F8FAFC; border-radius: 4px; border: 1px solid #E2E8F0;">${displayType}</span></td>
+                    <td>${meetStatus}</td>
+                    <td style="text-align: right;">${meetAction}</td>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function scheduleMeeting(id, email) {
+            alert(`Sending Google Meet Invitation to ${email}...\n\nLink: https://meet.google.com/launchpad-boost-session`);
+        }
+
+        function logout() {
+            window.location.reload();
+        }
+    </script>
+</body>
+
+</html>
